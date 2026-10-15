@@ -25,69 +25,26 @@ function generateIcon(size, isMaskable = false) {
   const canvas = createCanvas(size, size);
   const ctx = canvas.getContext('2d');
 
-  // For maskable, use full background
+  // For maskable, use full gradient background
   if (isMaskable) {
-    // Gradient background for maskable (full bleed)
+    // Full bleed gradient for maskable
     const gradient = ctx.createLinearGradient(0, 0, size, size);
     gradient.addColorStop(0, COLORS.gradient.start);
     gradient.addColorStop(1, COLORS.gradient.end);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, size, size);
-
-    // Letter "A" centered
-    ctx.fillStyle = COLORS.white;
-    ctx.font = `900 ${size * 0.6}px system-ui, -apple-system, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('A', size / 2, size / 2);
   } else {
-    // Regular icon: white/light background with blue gradient A in rounded box
-    // Background (white or light gray)
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, size, size);
-
-    // Rounded square box for "A" (like navbar logo)
-    const boxSize = size * 0.85; // 85% of canvas
-    const padding = (size - boxSize) / 2;
-    const radius = boxSize * 0.2; // 20% rounded corners
-
-    // Gradient for the box
-    const gradient = ctx.createLinearGradient(
-      padding,
-      padding,
-      padding + boxSize,
-      padding + boxSize
-    );
+    // Regular icon: solid blue gradient square
+    const gradient = ctx.createLinearGradient(0, 0, size, size);
     gradient.addColorStop(0, COLORS.gradient.start);
     gradient.addColorStop(1, COLORS.gradient.end);
-
-    ctx.fillStyle = gradient;
     
-    // Draw rounded box
-    ctx.beginPath();
-    ctx.moveTo(padding + radius, padding);
-    ctx.lineTo(padding + boxSize - radius, padding);
-    ctx.quadraticCurveTo(padding + boxSize, padding, padding + boxSize, padding + radius);
-    ctx.lineTo(padding + boxSize, padding + boxSize - radius);
-    ctx.quadraticCurveTo(padding + boxSize, padding + boxSize, padding + boxSize - radius, padding + boxSize);
-    ctx.lineTo(padding + radius, padding + boxSize);
-    ctx.quadraticCurveTo(padding, padding + boxSize, padding, padding + boxSize - radius);
-    ctx.lineTo(padding, padding + radius);
-    ctx.quadraticCurveTo(padding, padding, padding + radius, padding);
-    ctx.closePath();
-    ctx.fill();
-
-    // Shadow
-    ctx.shadowColor = 'rgba(37, 99, 235, 0.25)';
-    ctx.shadowBlur = size * 0.03;
-    ctx.shadowOffsetY = size * 0.01;
-
-    // Letter "A" white, centered in box
-    ctx.fillStyle = COLORS.white;
-    ctx.font = `900 ${boxSize * 0.7}px system-ui, -apple-system, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('A', size / 2, size / 2);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+    
+    // Optional: subtle shadow for depth
+    ctx.shadowColor = 'rgba(37, 99, 235, 0.2)';
+    ctx.shadowBlur = size * 0.02;
   }
 
   return canvas;
