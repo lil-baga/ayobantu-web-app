@@ -6,7 +6,7 @@ import AdminNav from '../_components/AdminNav';
 export const dynamic = 'force-dynamic';
 
 export default async function CampaignUpdatesPage() {
-  const staff = await requireStaff(['admin', 'finance']);
+  const staff = await requireStaff();
 
   const supabase = createAdminClient();
   const { data: updates } = await supabase

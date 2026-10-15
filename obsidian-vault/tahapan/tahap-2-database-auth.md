@@ -49,7 +49,7 @@ Setup database schema lengkap, migrasi, RLS policies, storage buckets, seed data
 - ✅ **Storage buckets**: campaign-images (public), disbursement-proofs (private)
 - ✅ **RLS**: policies untuk public read campaigns, donor insert contacts/donations/payments, staff full access via helper functions
 - ✅ **Triggers**: `update_updated_at` untuk updated_at, `donation_after_payment` untuk update campaign_funds
-- ✅ **Seed**: 1 admin (admin@ayobantu.local), 1 finance (finance@ayobantu.local), 3 kampanye aktif
+- ✅ **Seed**: 2 admin accounts (admin@ayobantu.local + finance→admin), 3 kampanye aktif
 
 ## Testing Steps
 

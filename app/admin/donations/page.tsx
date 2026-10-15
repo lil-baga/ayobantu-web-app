@@ -99,10 +99,10 @@ export default async function AdminDonationsPage() {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex justify-end gap-2">
-                          {d.status === 'pending' && (staff.role === 'finance' || staff.role === 'admin') && (
+                          {d.status === 'pending' && (
                             <ConfirmButton donationId={d.id} />
                           )}
-                          {d.status === 'paid' && (staff.role === 'finance' || staff.role === 'admin') && (
+                          {d.status === 'paid' && (
                             <RefundButton donationId={d.id} maxAmount={d.amount} />
                           )}
                         </div>

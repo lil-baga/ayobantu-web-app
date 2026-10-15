@@ -16,7 +16,7 @@ interface DonationRow {
 }
 
 export async function GET() {
-  await requireStaff(['admin', 'finance']);
+  await requireStaff();
 
   const supabase = createAdminClient();
   const { data: donations } = await supabase

@@ -54,6 +54,6 @@ Setelah selesai, cek di **Table Editor**:
 
 Credentials seed data:
 - Admin: admin@ayobantu.test / password123
-- Finance: finance@ayobantu.test / password123
+- Admin: admin@ayobantu.test / password123
 
 Cek di Authentication → Users untuk memastikan user terbuat.

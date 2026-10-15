@@ -54,7 +54,7 @@ Di **Supabase Dashboard → SQL Editor**:
 
 **Authentication → Users → Add user**:
 - Email: `admin@ayobantu.test`, Password: `password123`, **Auto Confirm: YES**
-- Email: `finance@ayobantu.test`, Password: `password123`, **Auto Confirm: YES**
+- Email: `admin@ayobantu.test`, Password: `password123`, **Auto Confirm: YES**
 
 Copy UUID masing-masing, edit `supabase/seed_manual.sql` dengan UUID tersebut, lalu run di SQL Editor.
 

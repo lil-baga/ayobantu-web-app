@@ -8,7 +8,7 @@ interface Props {
 
 export async function PATCH(request: Request, { params }: Props) {
   const { id } = await params;
-  const staff = await requireStaff(['admin', 'finance']);
+  const staff = await requireStaff();
   const body = await request.json();
   const status = body.status; // status: 'planned' | 'disbursed' | 'reported'
   const disbursementId = id || body.disbursement_id;

@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
-export type StaffRole = 'admin' | 'finance';
+export type StaffRole = 'admin';
 
 export interface StaffProfile {
   id: string;

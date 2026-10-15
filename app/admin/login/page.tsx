@@ -29,14 +29,9 @@ export default function AdminLoginPage() {
     }
   }
 
-  function handleQuickFill(role: 'admin' | 'finance') {
-    if (role === 'admin') {
-      setEmail('admin@ayobantu.local');
-      setPassword('password123');
-    } else {
-      setEmail('finance@ayobantu.local');
-      setPassword('password123');
-    }
+  function handleQuickFill() {
+    setEmail('admin@ayobantu.local');
+    setPassword('password123');
   }
 
   return (
@@ -105,22 +100,13 @@ export default function AdminLoginPage() {
           <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider text-center">
             Akun Demo Penguji:
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickFill('admin')}
-              className="px-2.5 py-1.5 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-            >
-              Akun Admin
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickFill('finance')}
-              className="px-2.5 py-1.5 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-            >
-              Akun Finance
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => handleQuickFill()}
+            className="w-full px-2.5 py-1.5 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+          >
+            Isi Akun Admin
+          </button>
         </div>
 
         <div className="text-center">

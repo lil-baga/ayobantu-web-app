@@ -8,7 +8,7 @@ interface Props {
 
 export async function POST(request: Request, { params }: Props) {
   const { id } = await params;
-  const staff = await requireStaff(['finance', 'admin']);
+  const staff = await requireStaff();
   const body = await request.json();
   const { refund_amount, refund_note } = body;
 

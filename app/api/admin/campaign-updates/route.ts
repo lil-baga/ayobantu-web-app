@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { sendCampaignUpdateEmail } from '@/lib/email';
 
 export async function POST(request: Request) {
-  const staff = await requireStaff(['admin', 'finance']);
+  const staff = await requireStaff();
   const body = await request.json();
   const { campaign_id, title, body: updateBody, image_urls, disbursement_id } = body;
 

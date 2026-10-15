@@ -5,7 +5,7 @@ import CampaignUpdateForm from '../_components/CampaignUpdateForm';
 export const dynamic = 'force-dynamic';
 
 export default async function NewCampaignUpdatePage() {
-  await requireStaff(['admin', 'finance']);
+  await requireStaff();
 
   const supabase = (await import('@/lib/supabase/admin')).createAdminClient();
   const { data: campaigns } = await supabase

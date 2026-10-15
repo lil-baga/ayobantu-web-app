@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default async function CampaignUpdateDetailPage({ params }: Props) {
-  await requireStaff(['admin', 'finance']);
+  await requireStaff();
   const { id } = await params;
 
   const supabase = createAdminClient();

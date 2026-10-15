@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { requireStaff } from '@/lib/auth/staff';
 
 export async function POST(request: Request) {
-  const staff = await requireStaff(['admin', 'finance']);
+  const staff = await requireStaff();
   const body = await request.json();
   const parsed = disbursementSchema.safeParse(body);
 

@@ -6,7 +6,7 @@ import DisbursementForm from '../_components/DisbursementForm';
 export const dynamic = 'force-dynamic';
 
 export default async function NewDisbursementPage() {
-  await requireStaff(['admin', 'finance']);
+  await requireStaff();
   
   const supabase = createAdminClient();
   const { data: campaigns } = await supabase
