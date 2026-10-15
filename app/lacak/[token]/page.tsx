@@ -34,6 +34,13 @@ export default async function TrackDonationPage({ params }: Props) {
 
   if (!donation) notFound();
 
+  // Fetch notifications for this donation
+  const { data: notifications } = await supabase
+    .from('notifications')
+    .select('id, type, status, created_at, campaign_updates (title, body)')
+    .eq('donation_id', donation.id)
+    .order('created_at', { ascending: false });
+
   const { data: payment } = await supabase
     .from('payments')
     .select('method, gateway_order_id, status, expires_at, paid_at')
@@ -162,6 +169,60 @@ export default async function TrackDonationPage({ params }: Props) {
               <div className="p-4 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900 text-xs text-purple-900 dark:text-purple-300">
                 <div className="font-bold mb-1">Catatan Pengembalian Dana (Refund):</div>
                 <p>{donation.refund_note || 'Refund diproses oleh bagian keuangan.'}</p>
+              </div>
+            )}
+
+            {/* Notifications */}
+            {notifications && notifications.length > 0 && (
+              <div className="p-6 border-t border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    🔔 Notifikasi
+                  </span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
+                    {notifications.length}
+                  </span>
+                </div>
+                
+                <div className="space-y-3">
+                  {notifications.map((notif) => {
+                    const update = (notif.campaign_updates as Array<{ title: string; body: string }> | null)?.[0];
+                    
+                    return (
+                      <div
+                        key={notif.id}
+                        className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200 dark:border-blue-900"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white flex-shrink-0">
+                            {notif.type === 'receipt' ? '✓' : '📢'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-bold text-sm text-gray-900 dark:text-white mb-1">
+                              {notif.type === 'receipt' && 'Pembayaran Dikonfirmasi'}
+                              {notif.type === 'update' && (update?.title || 'Update Kampanye')}
+                            </div>
+                            <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {notif.type === 'receipt' && 
+                                'Donasi Anda telah diverifikasi dan dikonfirmasi oleh tim Finance. Dana akan segera disalurkan sesuai kebutuhan kampanye.'
+                              }
+                              {notif.type === 'update' && update?.body}
+                            </p>
+                            <div className="text-[10px] text-gray-400 mt-2">
+                              {new Date(notif.created_at).toLocaleString('id-ID', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
