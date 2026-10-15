@@ -135,7 +135,7 @@ export default function DonationForm({ campaignId, campaignTitle }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Email *</label>
+        <label className="block text-sm font-medium mb-1">Email</label>
         <input
           type="email"
           value={formData.email}
@@ -146,7 +146,7 @@ export default function DonationForm({ campaignId, campaignTitle }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Nomor Telepon *</label>
+        <label className="block text-sm font-medium mb-1">Nomor Telepon</label>
         <input
           type="tel"
           value={formData.phone}
@@ -154,7 +154,7 @@ export default function DonationForm({ campaignId, campaignTitle }: Props) {
           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
           placeholder="08123456789"
         />
-        <div className="text-xs text-gray-500 mt-1">Isi salah satu: email atau nomor telepon</div>
+        <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">* Wajib isi salah satu: Email atau Nomor Telepon</div>
       </div>
 
       <div className="flex items-center gap-2">

@@ -2,9 +2,16 @@ import { requireStaff } from '@/lib/auth/staff';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
 
-export async function PATCH(request: Request) {
+interface Props {
+  params: Promise<{ id: string }>;
+}
+
+export async function PATCH(request: Request, { params }: Props) {
+  const { id } = await params;
   const staff = await requireStaff(['admin', 'finance']);
-  const { disbursement_id, status } = await request.json(); // status: 'planned' | 'disbursed' | 'reported'
+  const body = await request.json();
+  const status = body.status; // status: 'planned' | 'disbursed' | 'reported'
+  const disbursementId = id || body.disbursement_id;
 
   if (!['planned', 'disbursed', 'reported'].includes(status)) {
     return NextResponse.json({ error: 'Status tidak valid' }, { status: 400 });
@@ -16,7 +23,7 @@ export async function PATCH(request: Request) {
   const { data: disbursement } = await supabase
     .from('disbursements')
     .select('id, status, campaign_id')
-    .eq('id', disbursement_id)
+    .eq('id', disbursementId)
     .single();
 
   if (!disbursement) {
@@ -36,7 +43,7 @@ export async function PATCH(request: Request) {
   const { error } = await supabase
     .from('disbursements')
     .update(updates)
-    .eq('id', disbursement_id);
+    .eq('id', disbursementId);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -46,7 +53,7 @@ export async function PATCH(request: Request) {
     user_id: staff.id,
     action: 'update_status',
     entity_type: 'disbursement',
-    entity_id: disbursement_id,
+    entity_id: disbursementId,
     changes: updates,
   });
 
