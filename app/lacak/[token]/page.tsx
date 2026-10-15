@@ -37,7 +37,7 @@ export default async function TrackDonationPage({ params }: Props) {
   // Fetch notifications for this donation
   const { data: notifications } = await supabase
     .from('notifications')
-    .select('id, type, status, created_at, campaign_updates (title, body)')
+    .select('id, type, title, message, read, created_at')
     .eq('donation_id', donation.id)
     .order('created_at', { ascending: false });
 
@@ -174,8 +174,8 @@ export default async function TrackDonationPage({ params }: Props) {
 
             {/* Notifications */}
             {notifications && notifications.length > 0 && (
-              <div className="p-6 border-t border-gray-100 dark:border-gray-800">
-                <div className="flex items-center gap-2 mb-4">
+              <div className="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-3">
+                <div className="flex items-center gap-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
                     🔔 Notifikasi
                   </span>
@@ -184,9 +184,13 @@ export default async function TrackDonationPage({ params }: Props) {
                   </span>
                 </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {notifications.map((notif) => {
-                    const update = (notif.campaign_updates as Array<{ title: string; body: string }> | null)?.[0];
+                    const iconMap = {
+                      payment_confirmed: '✅',
+                      disbursement_created: '💸',
+                      campaign_updated: '📢',
+                    };
                     
                     return (
                       <div
@@ -194,19 +198,15 @@ export default async function TrackDonationPage({ params }: Props) {
                         className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200 dark:border-blue-900"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white flex-shrink-0">
-                            {notif.type === 'receipt' ? '✓' : '📢'}
+                          <div className="text-xl flex-shrink-0">
+                            {iconMap[notif.type as keyof typeof iconMap] || '🔔'}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="font-bold text-sm text-gray-900 dark:text-white mb-1">
-                              {notif.type === 'receipt' && 'Pembayaran Dikonfirmasi'}
-                              {notif.type === 'update' && (update?.title || 'Update Kampanye')}
+                              {notif.title}
                             </div>
-                            <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                              {notif.type === 'receipt' && 
-                                'Donasi Anda telah diverifikasi dan dikonfirmasi oleh tim Finance. Dana akan segera disalurkan sesuai kebutuhan kampanye.'
-                              }
-                              {notif.type === 'update' && update?.body}
+                            <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                              {notif.message}
                             </p>
                             <div className="text-[10px] text-gray-400 mt-2">
                               {new Date(notif.created_at).toLocaleString('id-ID', {

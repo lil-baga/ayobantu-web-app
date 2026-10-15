@@ -40,13 +40,37 @@ export async function PATCH(request: Request, { params }: Props) {
     updates.disbursed_at = new Date().toISOString();
   }
 
-  const { error } = await supabase
+  const { data: updatedDisbursement, error } = await supabase
     .from('disbursements')
     .update(updates)
-    .eq('id', disbursementId);
+    .eq('id', disbursementId)
+    .select('amount, recipient_name, category')
+    .single();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // In-app notification saat disbursed
+  if (status === 'disbursed') {
+    const { data: campaignDonations } = await supabase
+      .from('donations')
+      .select('id')
+      .eq('campaign_id', disbursement.campaign_id)
+      .eq('status', 'paid')
+      .eq('notify_updates', true);
+
+    if (campaignDonations && campaignDonations.length > 0) {
+      await supabase.from('notifications').insert(
+        campaignDonations.map((d) => ({
+          donation_id: d.id,
+          type: 'disbursement_created',
+          title: '💸 Dana Telah Disalurkan',
+          message: `Dana sebesar Rp${updatedDisbursement.amount.toLocaleString('id-ID')} telah dicairkan untuk ${updatedDisbursement.category} kepada ${updatedDisbursement.recipient_name}. Bukti pencairan akan diunggah segera.`,
+          read: false,
+        }))
+      );
+    }
   }
 
   await supabase.from('audit_logs').insert({

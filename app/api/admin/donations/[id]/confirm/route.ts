@@ -68,13 +68,14 @@ export async function PATCH(request: Request, { params }: Props) {
     return NextResponse.json({ error: paymentError.message }, { status: 500 });
   }
 
-  // Create notification record (receipt)
+  // In-app notification
   if (status === 'paid') {
     await supabase.from('notifications').insert({
       donation_id: id,
-      type: 'receipt',
-      channel: 'email',
-      status: 'queued',
+      type: 'payment_confirmed',
+      title: '✅ Pembayaran Berhasil Dikonfirmasi',
+      message: `Donasi Anda sebesar Rp${donation.amount.toLocaleString('id-ID')} telah diverifikasi oleh tim Finance. Dana akan segera disalurkan sesuai kebutuhan kampanye. Terima kasih atas kepercayaan Anda!`,
+      read: false,
     });
   }
 

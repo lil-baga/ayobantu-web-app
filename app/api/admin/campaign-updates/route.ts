@@ -61,13 +61,33 @@ export async function POST(request: Request) {
       }
     }).filter((e): e is string => e !== null) || [];
 
-  // Send notification email
+  // Send notification email (stub, not implemented)
   await sendCampaignUpdateEmail({
     campaignTitle: campaign.title,
     updateTitle: title,
     updateBody,
     donorEmails,
   });
+
+  // In-app notifications untuk semua donatur kampanye
+  const { data: campaignDonations } = await supabase
+    .from('donations')
+    .select('id')
+    .eq('campaign_id', campaign_id)
+    .eq('status', 'paid')
+    .eq('notify_updates', true);
+
+  if (campaignDonations && campaignDonations.length > 0) {
+    await supabase.from('notifications').insert(
+      campaignDonations.map((d) => ({
+        donation_id: d.id,
+        type: 'campaign_updated',
+        title: `📢 Update: ${campaign.title}`,
+        message: `${title}\n\n${updateBody.slice(0, 200)}${updateBody.length > 200 ? '...' : ''}`,
+        read: false,
+      }))
+    );
+  }
 
   // Audit log
   await supabase.from('audit_logs').insert({
