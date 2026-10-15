@@ -60,7 +60,7 @@ function generateIcon(size, isMaskable = false) {
 
   // Letter "A"
   ctx.fillStyle = COLORS.white;
-  ctx.font = `900 ${innerSize * 0.7}px system-ui, -apple-system, sans-serif`;
+  ctx.font = `900 ${innerSize * 0.75}px system-ui, -apple-system, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('A', padding + innerSize / 2, padding + innerSize / 2);
