@@ -52,13 +52,14 @@ export async function POST(request: Request) {
 
   // Decrypt emails (masked for logging)
   const { decrypt } = await import('@/lib/crypto');
-  const donorEmails = donations?.map((d: any) => {
-    try {
-      return d.donor_contacts?.email_enc ? decrypt(d.donor_contacts.email_enc) : null;
-    } catch {
-      return null;
-    }
-  }).filter((e): e is string => e !== null) || [];
+  const donorEmails = (donations as unknown as Array<{ donor_contacts: { email_enc: string | null } | null }> | null)
+    ?.map((d) => {
+      try {
+        return d.donor_contacts?.email_enc ? decrypt(d.donor_contacts.email_enc) : null;
+      } catch {
+        return null;
+      }
+    }).filter((e): e is string => e !== null) || [];
 
   // Send notification email
   await sendCampaignUpdateEmail({

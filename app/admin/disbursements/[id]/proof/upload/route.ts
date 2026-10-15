@@ -3,7 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
-  const staff = await (await import('@/lib/auth/staff')).requireStaff(['admin', 'finance']);
+  const staff = await requireStaff(['admin', 'finance']);
   const { id } = await request.json();
 
   if (!id) {

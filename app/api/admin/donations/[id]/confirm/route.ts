@@ -1,7 +1,6 @@
 import { requireStaff } from '@/lib/auth/staff';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 
 interface Props {
   params: Promise<{ id: string }>;

@@ -64,8 +64,8 @@ export default async function DonationSuccessPage({ searchParams }: Props) {
             <ol className="text-yellow-700 dark:text-yellow-300 space-y-1 list-decimal list-inside text-xs">
               <li>Login sebagai Finance di <Link href="/admin/login" className="underline">/admin/login</Link></li>
               <li>Buka menu Donasi</li>
-              <li>Cari donasi Anda dan klik "Konfirmasi Pembayaran"</li>
-              <li>Status akan berubah menjadi "Paid" dan dana akan dihitung</li>
+              <li>Cari donasi Anda dan klik &quot;Konfirmasi Pembayaran&quot;</li>
+              <li>Status akan berubah menjadi &quot;Paid&quot; dan dana akan dihitung</li>
             </ol>
           </div>
 

@@ -1,6 +1,6 @@
 # API Routes & Pages
 
-Generated: 2026-10-15T00:41:03.237Z
+Generated: 2026-10-15T01:42:04.198Z
 
 ## All Routes
 
@@ -17,7 +17,6 @@ Generated: 2026-10-15T00:41:03.237Z
 - `/admin/disbursements/:id/proof/upload`
 - `/admin/disbursements/new`
 - `/admin/donations`
-- `/admin/donations.csv`
 - `/admin/login`
 - `/admin/reports`
 - `/api/admin/campaign-updates`
@@ -28,6 +27,7 @@ Generated: 2026-10-15T00:41:03.237Z
 - `/api/admin/disbursements/:id/status`
 - `/api/admin/donations.csv`
 - `/api/admin/donations/:id/confirm`
+- `/api/admin/donations/:id/refund`
 - `/api/admin/reports/:id`
 - `/api/auth/logout`
 - `/api/donations`
@@ -59,7 +59,6 @@ Generated: 2026-10-15T00:41:03.237Z
 - `/admin/disbursements/:id/proof/upload`
 - `/admin/disbursements/new`
 - `/admin/donations`
-- `/admin/donations.csv`
 - `/admin/login`
 - `/admin/reports`
 - `/api/admin/campaign-updates`
@@ -70,6 +69,7 @@ Generated: 2026-10-15T00:41:03.237Z
 - `/api/admin/disbursements/:id/status`
 - `/api/admin/donations.csv`
 - `/api/admin/donations/:id/confirm`
+- `/api/admin/donations/:id/refund`
 - `/api/admin/reports/:id`
 
 ### API Routes
@@ -81,6 +81,7 @@ Generated: 2026-10-15T00:41:03.237Z
 - `/api/admin/disbursements/:id/status`
 - `/api/admin/donations.csv`
 - `/api/admin/donations/:id/confirm`
+- `/api/admin/donations/:id/refund`
 - `/api/admin/reports/:id`
 - `/api/auth/logout`
 - `/api/donations`

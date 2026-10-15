@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { decrypt, maskEmail, maskPhone } from '@/lib/crypto';
 import Link from 'next/link';
 import ConfirmButton from './_components/ConfirmButton';
+import RefundButton from './_components/RefundButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,7 +49,7 @@ export default async function AdminDonationsPage() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Daftar Donasi</h2>
           <a 
-            href="/admin/donations.csv"
+            href="/api/admin/donations.csv"
             className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition"
           >
             📥 Export CSV
@@ -81,7 +82,7 @@ export default async function AdminDonationsPage() {
                   } else if (contact?.phone_enc) {
                     contactDisplay = maskPhone(decrypt(contact.phone_enc));
                   }
-                } catch (e) {
+                } catch {
                   contactDisplay = '***';
                 }
 
@@ -112,6 +113,9 @@ export default async function AdminDonationsPage() {
                     <td className="px-4 py-3">
                       {d.status === 'pending' && (staff.role === 'finance' || staff.role === 'admin') && (
                         <ConfirmButton donationId={d.id} />
+                      )}
+                      {d.status === 'paid' && (staff.role === 'finance' || staff.role === 'admin') && (
+                        <RefundButton donationId={d.id} maxAmount={d.amount} />
                       )}
                     </td>
                   </tr>

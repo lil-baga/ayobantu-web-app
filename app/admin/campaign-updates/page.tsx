@@ -1,7 +1,6 @@
 import { requireStaff } from '@/lib/auth/staff';
 import { createAdminClient } from '@/lib/supabase/admin';
 import Link from 'next/link';
-import CampaignUpdateForm from './_components/CampaignUpdateForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,12 +8,6 @@ export default async function CampaignUpdatesPage() {
   await requireStaff(['admin', 'finance']);
 
   const supabase = createAdminClient();
-  const { data: campaigns } = await supabase
-    .from('campaigns')
-    .select('id, title, slug')
-    .eq('status', 'active')
-    .order('title');
-
   const { data: updates } = await supabase
     .from('campaign_updates')
     .select(`

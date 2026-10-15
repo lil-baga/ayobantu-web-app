@@ -3,7 +3,19 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { decrypt } from '@/lib/crypto';
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+interface DonationRow {
+  id: string;
+  amount: number;
+  status: string;
+  display_name: string | null;
+  is_anonymous: boolean;
+  created_at: string;
+  paid_at: string | null;
+  campaigns: Array<{ title: string }> | null;
+  donor_contacts: Array<{ email_enc: string | null; phone_enc: string | null }> | null;
+}
+
+export async function GET() {
   await requireStaff(['admin', 'finance']);
 
   const supabase = createAdminClient();
@@ -20,21 +32,23 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Gagal mengambil data donasi' }, { status: 500 });
   }
 
+  const typedDonations = donations as unknown as DonationRow[];
+
   // CSV headers
   const headers = ['ID', 'Kampanye', 'Nama Donatur', 'Email', 'Telepon', 'Jumlah', 'Status', 'Tanggal Donasi', 'Tanggal Bayar'];
   
   // CSV rows
-  const rows = donations.map((d: any) => {
-    const campaign = (d.campaigns as Array<{ title: string }> | null)?.[0]?.title || '-';
-    const donor = d.donor_contacts as Array<{ email_enc: string; phone_enc: string }> | null;
+  const rows = typedDonations.map((d) => {
+    const campaign = d.campaigns?.[0]?.title || '-';
+    const donor = d.donor_contacts?.[0];
     
     let email = '-';
     let phone = '-';
     
-    if (donor?.[0]) {
+    if (donor) {
       try {
-        if (donor[0].email_enc) email = decrypt(donor[0].email_enc);
-        if (donor[0].phone_enc) phone = decrypt(donor[0].phone_enc);
+        if (donor.email_enc) email = decrypt(donor.email_enc);
+        if (donor.phone_enc) phone = decrypt(donor.phone_enc);
       } catch {
         email = '[decrypt error]';
         phone = '[decrypt error]';
@@ -55,7 +69,7 @@ export async function GET(request: Request) {
   });
 
   // Escape CSV values
-  const escapeCsv = (val: any) => {
+  const escapeCsv = (val: string | number) => {
     const str = String(val);
     if (str.includes(',') || str.includes('"') || str.includes('\n')) {
       return `"${str.replace(/"/g, '""')}"`;

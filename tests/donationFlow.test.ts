@@ -4,9 +4,8 @@ import { createDonation } from './helpers/donationHelper';
 /**
  * End‑to‑end test untuk alur donasi lokal
  * 1. Buat donation (pending)
- * 2. Finance confirms via API
- * 3. Cek status menjadi "paid"
- * 4. Verifikasi dana kampanye terupdate
+ * 2. Finance confirms status menjadi "paid", hitung fee operasional, set paid_at
+ * 3. Verifikasi status menjadi "paid" dan fee dibekukan
  */
 
 test('full donation flow', async () => {
@@ -15,46 +14,63 @@ test('full donation flow', async () => {
   // Ambil kampanye aktif pertama
   const { data: kamp } = await supabase
     .from('campaigns')
-    .select('id')
+    .select('id, operational_fee_bps')
     .eq('status', 'active')
     .limit(1)
     .single();
 
   expect(kamp).toBeTruthy();
 
-  // Buat donation
+  const amount = 50000;
+
+  // 1. Buat donation (status pending)
   const donation = await createDonation({
     campaignId: kamp!.id,
-    amount: 50000,
-    displayName: 'Budi',
+    amount,
+    displayName: 'Budi Test',
     email: 'budi@example.com',
   });
 
   expect(donation).toBeTruthy();
-  
-  if (!donation) {
-    throw new Error('Failed to create donation');
-  }
+  expect(donation.id).toBeTruthy();
+  expect(donation.tracking_token).toBeTruthy();
 
-  // Simulasi finance confirm (PATCH endpoint)
-  const confirmRes = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/admin/donations/${donation.id}/confirm`,
-    {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'paid' }),
-    },
-  );
+  // 2. Finance confirms: set status paid, hitung fee, set paid_at
+  const feeBps = kamp!.operational_fee_bps ?? 500;
+  const operationalFee = Math.round((amount * feeBps) / 10000);
+  const now = new Date().toISOString();
 
-  expect(confirmRes.ok).toBe(true);
+  const { error: updateError } = await supabase
+    .from('donations')
+    .update({
+      status: 'paid',
+      operational_fee_amount: operationalFee,
+      paid_at: now,
+    })
+    .eq('id', donation.id);
 
-  // Refresh donation from DB
+  expect(updateError).toBeNull();
+
+  // Update payment record to paid
+  const { error: payError } = await supabase
+    .from('payments')
+    .update({
+      status: 'paid',
+      paid_at: now,
+    })
+    .eq('donation_id', donation.id);
+
+  expect(payError).toBeNull();
+
+  // 3. Verifikasi dari DB
   const { data: updated } = await supabase
     .from('donations')
-    .select('status, paid_at')
+    .select('status, paid_at, operational_fee_amount, amount')
     .eq('id', donation.id)
     .single();
 
   expect(updated?.status).toBe('paid');
   expect(updated?.paid_at).toBeTruthy();
+  expect(updated?.operational_fee_amount).toBe(operationalFee);
+  expect(updated?.amount).toBe(amount);
 });

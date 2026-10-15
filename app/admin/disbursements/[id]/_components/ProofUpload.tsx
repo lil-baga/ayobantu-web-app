@@ -41,7 +41,7 @@ export default function ProofUpload({ disbursementId }: Props) {
 
       setFile(null);
       window.location.reload();
-    } catch (err) {
+    } catch {
       setError('Gagal mengupload bukti');
       setLoading(false);
     }

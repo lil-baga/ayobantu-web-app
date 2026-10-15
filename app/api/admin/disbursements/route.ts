@@ -1,10 +1,10 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { disbursementSchema } from '@/lib/validations/disbursement';
 import { NextResponse } from 'next/server';
-import { env } from '@/lib/env';
+import { requireStaff } from '@/lib/auth/staff';
 
 export async function POST(request: Request) {
-  const staff = await (await import('@/lib/auth/staff')).requireStaff(['admin', 'finance']);
+  const staff = await requireStaff(['admin', 'finance']);
   const body = await request.json();
   const parsed = disbursementSchema.safeParse(body);
 
@@ -30,6 +30,7 @@ export async function POST(request: Request) {
     .from('disbursements')
     .insert({
       ...parsed.data,
+      disbursed_at: parsed.data.disbursed_at || new Date().toISOString(),
       status: 'planned',
       created_by: staff.id,
     })

@@ -38,6 +38,9 @@ describe('Disbursement Flow', () => {
   test('create disbursement → update status → verify', async () => {
     const supabase = createAdminClient();
 
+    // Get staff ID
+    const { data: staff } = await supabase.from('staff_profiles').select('id').limit(1).single();
+
     // Create disbursement (planned status)
     const { data: disb, error: createError } = await supabase
       .from('disbursements')
@@ -47,6 +50,8 @@ describe('Disbursement Flow', () => {
         category: 'Logistik',
         recipient_name: 'Beni Test',
         description: 'Test disbursement',
+        disbursed_at: new Date().toISOString(),
+        created_by: staff!.id,
         status: 'planned',
       })
       .select()

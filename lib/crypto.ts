@@ -7,7 +7,11 @@ const TAG_LENGTH = 16;
 function getKey(): Buffer {
   const key = process.env.ENCRYPTION_KEY;
   if (!key) throw new Error('ENCRYPTION_KEY not set');
-  return Buffer.from(key, 'hex');
+  // Support hex (64 chars), base64 (44 chars), or derive sha256 to ensure 32 bytes
+  if (/^[0-9a-fA-F]{64}$/.test(key)) {
+    return Buffer.from(key, 'hex');
+  }
+  return crypto.createHash('sha256').update(key).digest();
 }
 
 /** Encrypt plaintext using AES-256-GCM. Returns base64 string: iv:ciphertext:tag */

@@ -1,10 +1,9 @@
 import { requireStaff } from '@/lib/auth/staff';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 
 export async function PATCH(request: Request) {
-  const staff = await (await import('@/lib/auth/staff')).requireStaff(['admin', 'finance']);
+  const staff = await requireStaff(['admin', 'finance']);
   const { disbursement_id, status } = await request.json(); // status: 'planned' | 'disbursed' | 'reported'
 
   if (!['planned', 'disbursed', 'reported'].includes(status)) {
@@ -29,7 +28,7 @@ export async function PATCH(request: Request) {
     // Could implement check against campaign_funds, omitted for brevity
   }
 
-  const updates: Record<string, any> = { status };
+  const updates: Record<string, string> = { status };
   if (status === 'disbursed') {
     updates.disbursed_at = new Date().toISOString();
   }

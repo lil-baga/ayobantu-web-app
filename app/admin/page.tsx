@@ -11,21 +11,17 @@ export default async function AdminDashboardPage() {
 
   // Fetch stats in parallel
   const [
-    { count: totalCampaigns },
     { count: activeCampaigns },
     { count: totalDonations },
     { count: pendingDonations },
-    { count: paidDonations },
     { count: totalDisbursements },
     { count: reportedDisbursements },
     { data: recentDonations },
     { data: recentDisbursements },
   ] = await Promise.all([
-    supabase.from('campaigns').select('*', { count: 'exact', head: true }),
     supabase.from('campaigns').select('*', { count: 'exact', head: true }).eq('status', 'active'),
     supabase.from('donations').select('*', { count: 'exact', head: true }),
     supabase.from('donations').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-    supabase.from('donations').select('*', { count: 'exact', head: true }).eq('status', 'paid'),
     supabase.from('disbursements').select('*', { count: 'exact', head: true }),
     supabase.from('disbursements').select('*', { count: 'exact', head: true }).eq('status', 'reported'),
     supabase
@@ -103,20 +99,23 @@ export default async function AdminDashboardPage() {
               <Link href="/admin/donations" className="text-xs text-blue-600 hover:underline">Lihat semua</Link>
             </div>
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {recentDonations?.map((d: any) => (
-                <div key={d.id} className="p-4 flex justify-between items-center">
-                  <div>
-                    <div className="font-medium">{d.campaigns?.title || 'N/A'}</div>
-                    <div className="text-xs text-gray-500">{d.display_name || 'Anonim'} • {formatDate(d.created_at)}</div>
+              {recentDonations?.map((d) => {
+                const campaignTitle = (d.campaigns as unknown as { title: string } | null)?.title || 'N/A';
+                return (
+                  <div key={d.id} className="p-4 flex justify-between items-center">
+                    <div>
+                      <div className="font-medium">{campaignTitle}</div>
+                      <div className="text-xs text-gray-500">{d.display_name || 'Anonim'} • {formatDate(d.created_at)}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">{formatRupiah(d.amount)}</div>
+                      <span className={`text-xs px-2 py-0.5 rounded ${getStatusColor(d.status)}`}>
+                        {d.status}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-medium">{formatRupiah(d.amount)}</div>
-                    <span className={`text-xs px-2 py-0.5 rounded ${getStatusColor(d.status)}`}>
-                      {d.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
               {(!recentDonations || recentDonations.length === 0) && (
                 <div className="p-4 text-center text-gray-500">Belum ada donasi</div>
               )}
@@ -129,20 +128,23 @@ export default async function AdminDashboardPage() {
               <Link href="/admin/disbursements" className="text-xs text-blue-600 hover:underline">Lihat semua</Link>
             </div>
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {recentDisbursements?.map((d: any) => (
-                <div key={d.id} className="p-4 flex justify-between items-center">
-                  <div>
-                    <div className="font-medium">{d.campaigns?.title || 'N/A'}</div>
-                    <div className="text-xs text-gray-500">{d.recipient_name} • {formatDate(d.created_at)}</div>
+              {recentDisbursements?.map((d) => {
+                const campaignTitle = (d.campaigns as unknown as { title: string } | null)?.title || 'N/A';
+                return (
+                  <div key={d.id} className="p-4 flex justify-between items-center">
+                    <div>
+                      <div className="font-medium">{campaignTitle}</div>
+                      <div className="text-xs text-gray-500">{d.recipient_name} • {formatDate(d.created_at)}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">{formatRupiah(d.amount)}</div>
+                      <span className={`text-xs px-2 py-0.5 rounded ${getDisbursementStatusColor(d.status)}`}>
+                        {d.status}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-medium">{formatRupiah(d.amount)}</div>
-                    <span className={`text-xs px-2 py-0.5 rounded ${getDisbursementStatusColor(d.status)}`}>
-                      {d.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
               {(!recentDisbursements || recentDisbursements.length === 0) && (
                 <div className="p-4 text-center text-gray-500">Belum ada pencairan</div>
               )}

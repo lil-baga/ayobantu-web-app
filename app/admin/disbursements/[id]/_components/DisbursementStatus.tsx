@@ -67,7 +67,7 @@ export default function DisbursementStatus({ disbursementId, currentStatus }: Pr
       )}
       {status === 'disbursed' && (
         <div className="text-xs text-yellow-600 dark:text-yellow-400">
-          ⚠ Dicairkan - unggah bukti untuk merubah ke "Dilaporkan"
+          ⚠ Dicairkan - unggah bukti untuk merubah ke &quot;Dilaporkan&quot;
         </div>
       )}
     </div>

@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 export async function PATCH(request: Request) {
   const staff = await requireStaff(['admin']);
   const body = await request.json();
-  const { report_id, status, notes } = body;
+  const { report_id, status } = body;
 
   if (!report_id || !['reviewed', 'closed'].includes(status)) {
     return NextResponse.json({ error: 'Status tidak valid' }, { status: 400 });
