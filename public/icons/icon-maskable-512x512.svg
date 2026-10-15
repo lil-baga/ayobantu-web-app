@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Full bleed background -->
+  <rect width="512" height="512" fill="#2563eb"/>
+  
+  <!-- Safe zone content -->
+  <g transform="translate(51.2, 51.2)">
+    <rect width="409.6" height="409.6" fill="#1d4ed8" rx="73.728"/>
+    <text 
+      x="50%" 
+      y="50%" 
+      font-family="system-ui, -apple-system, sans-serif" 
+      font-size="245.76" 
+      font-weight="900" 
+      fill="white" 
+      text-anchor="middle" 
+      dominant-baseline="central"
+    >409.6</text>
+  </g>
+</svg>

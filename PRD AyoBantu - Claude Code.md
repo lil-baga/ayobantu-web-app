@@ -6,7 +6,7 @@
 ## 1. Tujuan & konteks
 Aplikasi web donasi seperti Kitabisa: orang bisa **berdonasi tanpa akun** dan melihat **laporan transparansi** (terkumpul, biaya operasional, dicairkan, sisa, bukti pencairan). Staf (Admin, Finance) mengelola kampanye, konfirmasi pembayaran, dan pencairan.
 
-Proyek kuliah. Aspek legal/perizinan dianggap sudah terpenuhi, abaikan. **Berbasis web biasa, bukan PWA.**
+Proyek kuliah. Aspek legal/perizinan dianggap sudah terpenuhi, abaikan. **Web app dengan dukungan PWA (installable, offline-ready).**
 
 ## 2. Keputusan wajib (prioritas tertinggi)
 **2.1 Lokal dulu.** Bangun dan jalankan di lingkungan lokal. Periksa repo/stack yang ada sebelum memilih teknologi. Jangan menambah infrastruktur tanpa kebutuhan. Opsi database lokal: Supabase CLI (`supabase start`, butuh Docker) agar Postgres, Auth, dan Storage berjalan di mesin sendiri.
@@ -19,7 +19,7 @@ Proyek kuliah. Aspek legal/perizinan dianggap sudah terpenuhi, abaikan. **Berbas
 - Metode (`transfer`/`qris`) hanya label pilihan, jangan mengklaim terintegrasi. UI staf harus menampilkan penanda **"MODE LOKAL"** (env var `PAYMENT_MODE=local`).
 - Modul `payments` dirancang agar gateway bisa ditambah kelak tanpa mengubah aturan inti, tetapi **jangan membangun integrasinya sekarang**.
 
-**2.4 Bukan PWA.** Jangan buat manifest, service worker, offline cache, atau prompt install. Cukup web responsif (mobile-first), SSR/ISR untuk halaman publik, dan metadata Open Graph untuk berbagi.
+**2.4 PWA (Progressive Web App).** Tambahkan manifest, service worker dengan caching strategy, offline fallback, dan install prompt. Web tetap responsif (mobile-first), SSR/ISR untuk halaman publik, dan metadata Open Graph untuk berbagi. Prioritas: kampanye list/detail dan halaman lacak bisa dibuka offline (cache strategi stale-while-revalidate).
 
 **2.5 Notifikasi** hanya dicatat di tabel `notifications` dan/atau ditampilkan di aplikasi (halaman sukses dan halaman lacak). Tidak ada pengiriman.
 
@@ -120,7 +120,7 @@ Validasi nominal; status donasi (anon tidak bisa `paid`); konfirmasi lokal + ide
 Nominal minimum donasi **Rp10.000** · `operational_fee_bps` **500** · masa berlaku `pending` **24 jam** (ditandai `expired` saat diakses/diproses staf, tanpa cron) · retensi kontak donatur **12 bulan** · izin rinci Admin/Finance sesuai Bagian 4.
 
 ## 13. Di luar lingkup
-Gateway/QRIS/VA/e-wallet sungguhan, webhook, uang sungguhan, PWA, email/WhatsApp, penggalang dana mandiri, donasi berulang, wallet, microservices, web push.
+Gateway/QRIS/VA/e-wallet sungguhan, webhook, uang sungguhan, email/WhatsApp, penggalang dana mandiri, donasi berulang, wallet, microservices, web push notifications (push API).
 
 ## 14. Aturan kerja untuk Claude Code
 - Periksa struktur repo dulu; satu tahap per sesi; tulis test bersama kodenya.
