@@ -70,24 +70,27 @@ BEGIN
   ON CONFLICT (id) DO NOTHING;
 
   -- Seed campaigns
-  INSERT INTO public.campaigns (slug, title, story, target_amount, status, operational_fee_bps, beneficiary_name, created_by)
+  INSERT INTO public.campaigns (slug, title, story, cover_image_url, target_amount, status, operational_fee_bps, beneficiary_name, created_by)
   VALUES
     (
       'bantu-korban-banjir-jakarta',
       'Bantu Korban Banjir Jakarta',
       'Banjir melanda Jakarta Selatan. Ribuan keluarga kehilangan tempat tinggal dan membutuhkan bantuan segera untuk kebutuhan dasar seperti makanan, air bersih, dan pakaian. Mari kita bantu saudara-saudara kita yang terdampak bencana.',
+      'https://images.unsplash.com/photo-1547683905-f686c993aae5?w=800&h=600&fit=crop',
       50000000, 'active', 500, 'Tim Relawan Jakarta', admin_id
     ),
     (
       'pendidikan-anak-desa',
       'Pendidikan untuk Anak-anak Desa',
       'Membantu membangun perpustakaan dan menyediakan buku untuk anak-anak di desa terpencil agar mereka dapat mengakses pendidikan yang layak. Setiap anak berhak mendapatkan pendidikan berkualitas.',
+      'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=600&fit=crop',
       25000000, 'active', 500, 'Yayasan Pendidikan Nusantara', admin_id
     ),
     (
       'operasi-jantung-anak',
       'Operasi Jantung untuk Anak Kecil',
       'Ahmad, 5 tahun, menderita penyakit jantung bawaan dan membutuhkan operasi segera. Keluarganya tidak mampu membiayai operasi yang mencapai puluhan juta rupiah. Bantu Ahmad untuk bisa hidup normal.',
+      'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800&h=600&fit=crop',
       75000000, 'draft', 500, 'Keluarga Ahmad', admin_id
     );
 
