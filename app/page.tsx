@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createAdminClient } from '@/lib/supabase/admin';
 import PublicNavbar from './_components/PublicNavbar';
 import PublicFooter from './_components/PublicFooter';
+import PWAProvider from './_components/PWAProvider';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,8 +26,9 @@ export default async function HomePage() {
   const fundsMap = new Map(funds?.map((f) => [f.campaign_id, f.collected]) || []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50/50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-      <PublicNavbar />
+    <PWAProvider>
+      <div className="min-h-screen flex flex-col bg-slate-50/50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+        <PublicNavbar />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-32">
@@ -162,6 +164,7 @@ export default async function HomePage() {
       </section>
 
       <PublicFooter />
-    </div>
+      </div>
+    </PWAProvider>
   );
 }
