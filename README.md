@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AyoBantu - Platform Donasi Online
 
-## Getting Started
+Platform donasi online lokal untuk proyek kuliah. Berbasis Next.js + Supabase.
 
-First, run the development server:
+## Setup Lokal
+
+### Prerequisites
+- Node.js 20+
+- Akun Supabase (gratis di supabase.com)
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Setup Supabase Cloud
+
+1. Buat project di [supabase.com](https://supabase.com)
+2. Di dashboard → **Settings** → **API**, copy:
+   - **Project URL**
+   - **anon public key**
+   - **service_role key**
+
+### 3. Environment Variables
+
+```bash
+cp .env.example .env.local
+```
+
+Generate encryption key (PowerShell):
+```powershell
+-join ((1..32 | ForEach-Object { '{0:x2}' -f (Get-Random -Maximum 256) }))
+```
+
+Edit `.env.local`:
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=paste-anon-key
+SUPABASE_SERVICE_ROLE_KEY=paste-service-role-key
+PAYMENT_MODE=local
+ENCRYPTION_KEY=paste-hasil-generate
+```
+
+### 4. Run Migrations
+
+Di **Supabase Dashboard → SQL Editor**:
+
+1. Copy isi `supabase/all_migrations.sql`
+2. Paste dan **Run**
+
+**Verifikasi:** Table Editor harus ada 11 tables + 1 view + 2 storage buckets.
+
+### 5. Create Staff Users
+
+**Authentication → Users → Add user**:
+- Email: `admin@ayobantu.test`, Password: `password123`, **Auto Confirm: YES**
+- Email: `finance@ayobantu.test`, Password: `password123`, **Auto Confirm: YES**
+
+Copy UUID masing-masing, edit `supabase/seed_manual.sql` dengan UUID tersebut, lalu run di SQL Editor.
+
+### 6. Start Dev
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Login: `admin@ayobantu.test` / `password123`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Progress
 
-## Learn More
+- [x] **Tahap 1:** Setup lokal
+- [x] **Tahap 2:** Database & auth ← **SELESAI**
+- [ ] **Tahap 3:** Kampanye CRUD
+- [ ] **Tahap 4:** Donasi & pembayaran
+- [ ] **Tahap 5:** Dashboard & pencairan
+- [ ] **Tahap 6:** Testing
 
-To learn more about Next.js, take a look at the following resources:
+## Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Next.js 16 (App Router)
+- TypeScript strict
+- Tailwind CSS 4
+- Supabase (PostgreSQL + Auth + Storage)
+- Zod
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Mode Lokal
 
-## Deploy on Vercel
+Pembayaran **tidak sungguhan**. Donasi dikonfirmasi manual oleh Finance. Badge **MODE LOKAL** tampil di admin UI.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Troubleshooting
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Invalid API key:** Periksa `.env.local`, restart dev server.
+
+**Login gagal:** Pastikan user di Authentication sudah **Auto Confirmed** dan `supabase/seed_manual.sql` sudah dijalankan dengan UUID yang benar.
+
+**Infinite recursion:** Migration `000017_fix_rls_recursion.sql` harus sudah dijalankan.

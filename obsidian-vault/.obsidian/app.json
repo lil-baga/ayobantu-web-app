@@ -1,0 +1,10 @@
+{
+  "theme": "obsidian",
+  "cssTheme": "default",
+  "showViewHeader": true,
+  "showStatusBar": true,
+  "fileRecovery": false,
+  "foldHeading": true,
+  "foldIndent": true,
+  "foldBelowHeading": true
+}
