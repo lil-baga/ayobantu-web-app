@@ -10,61 +10,53 @@ interface Props {
 }
 
 export default function AdminNav({ currentPath, staff }: Props) {
+  const navItems = [
+    { key: 'dashboard', label: 'Dashboard', href: '/admin' },
+    { key: 'campaigns', label: 'Kampanye', href: '/admin/campaigns' },
+    { key: 'donations', label: 'Donasi', href: '/admin/donations' },
+    { key: 'disbursements', label: 'Pencairan', href: '/admin/disbursements' },
+    { key: 'updates', label: 'Update', href: '/admin/campaign-updates' },
+    { key: 'reports', label: 'Laporan', href: '/admin/reports' },
+  ];
+
   return (
-    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+    <header className="sticky top-0 z-40 w-full border-b border-gray-200/80 dark:border-gray-800 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         <div className="flex items-center gap-6">
-          <Link href="/admin" className="text-xl font-bold text-blue-600 dark:text-blue-400">
-            AyoBantu Admin
+          <Link href="/admin" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-base shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform">
+              A
+            </div>
+            <span className="text-base font-bold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Portal Admin
+            </span>
           </Link>
-          <div className="flex gap-4 text-sm">
-            <Link
-              href="/admin"
-              className={currentPath === 'dashboard' ? 'font-medium text-blue-600' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600'}
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/admin/campaigns"
-              className={currentPath === 'campaigns' ? 'font-medium text-blue-600' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600'}
-            >
-              Kampanye
-            </Link>
-            <Link
-              href="/admin/donations"
-              className={currentPath === 'donations' ? 'font-medium text-blue-600' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600'}
-            >
-              Donasi
-            </Link>
-            <Link
-              href="/admin/disbursements"
-              className={currentPath === 'disbursements' ? 'font-medium text-blue-600' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600'}
-            >
-              Pencairan
-            </Link>
-            <Link
-              href="/admin/campaign-updates"
-              className={currentPath === 'updates' ? 'font-medium text-blue-600' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600'}
-            >
-              Update
-            </Link>
-            <Link
-              href="/admin/reports"
-              className={currentPath === 'reports' ? 'font-medium text-blue-600' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600'}
-            >
-              Laporan
-            </Link>
-          </div>
+
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
+              <Link
+                key={item.key}
+                href={item.href}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+                  currentPath === item.key
+                    ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
+          <span className="hidden sm:inline-flex text-[10px] font-bold px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900">
             MODE LOKAL
           </span>
           {staff && (
-            <div className="text-xs text-gray-600 dark:text-gray-400">
-              <span className="font-medium text-gray-800 dark:text-gray-200">{staff.name}</span>{' '}
-              <span className="uppercase text-[10px] px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
+            <div className="hidden sm:flex items-center gap-2 text-xs">
+              <span className="font-semibold text-gray-900 dark:text-gray-100">{staff.name}</span>
+              <span className="uppercase text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
                 {staff.role}
               </span>
             </div>
@@ -72,6 +64,6 @@ export default function AdminNav({ currentPath, staff }: Props) {
           <LogoutButton />
         </div>
       </div>
-    </nav>
+    </header>
   );
 }
