@@ -1,9 +1,9 @@
 import { requireStaff } from '@/lib/auth/staff';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { decrypt, maskEmail, maskPhone } from '@/lib/crypto';
-import Link from 'next/link';
 import ConfirmButton from './_components/ConfirmButton';
 import RefundButton from './_components/RefundButton';
+import AdminNav from '../_components/AdminNav';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,26 +24,7 @@ export default async function AdminDonationsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <h1 className="text-xl font-bold">AyoBantu Admin</h1>
-            <div className="flex gap-4 text-sm">
-              <Link href="/admin/campaigns" className="text-gray-600 dark:text-gray-400">Kampanye</Link>
-              <Link href="/admin/donations" className="font-medium text-blue-600">Donasi</Link>
-              <Link href="/admin/disbursements" className="text-gray-600 dark:text-gray-400">Pencairan</Link>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
-              MODE LOKAL
-            </span>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              {staff.name} ({staff.role})
-            </div>
-          </div>
-        </div>
-      </nav>
+      <AdminNav currentPath="donations" staff={{ name: staff.name, role: staff.role }} />
 
       <main className="max-w-7xl mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
