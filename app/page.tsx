@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import PublicNavbar from './_components/PublicNavbar';
 import PublicFooter from './_components/PublicFooter';
 import PWAProvider from './_components/PWAProvider';
+import InstallPrompt from './_components/InstallPrompt';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,7 @@ export default async function HomePage() {
 
   return (
     <PWAProvider>
+      <InstallPrompt />
       <div className="min-h-screen flex flex-col bg-slate-50/50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
         <PublicNavbar />
 
