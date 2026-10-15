@@ -3,14 +3,15 @@
 |  |  |
 | --- | --- |
 | **Nama** | AyoBantu |
-| **Versi** | 0.5 (draft) — versi lengkap, web app lokal |
+| **Versi** | 1.0 (production-ready) — PWA platform donasi online |
 | **Tanggal** | 15 Oktober 2026 |
+| **Status** | ✅ Production (Deployed to Vercel) |
 | **Jenis proyek** | Proyek kuliah (belajar merancang dan membangun) |
-| **Stack** | Next.js (App Router) + TypeScript, Supabase (PostgreSQL, Auth, Storage) |
+| **Stack** | Next.js 16.4.1 (App Router) + TypeScript, Supabase Cloud (PostgreSQL, Auth, Storage), PWA |
 | **Referensi model** | Platform donation-based crowdfunding seperti Kitabisa |
-| **Dokumen pendamping** | `PRD AyoBantu - Claude Code.md` (ringkas untuk Claude Code) |
+| **Dokumen pendamping** | `PRD AyoBantu - Claude Code.md` (ringkas untuk Claude Code), `PWA_IMPLEMENTATION.md`, `PWA_TESTING.md` |
 
-> **Konteks:** Aspek legal dan perizinan **diasumsikan sudah terpenuhi** dan tidak menjadi lingkup pengembangan. Aplikasi berbasis web biasa (**bukan PWA**) dan dijalankan **lokal terlebih dahulu**, tanpa integrasi API eksternal.
+> **Konteks:** Aspek legal dan perizinan **diasumsikan sudah terpenuhi** dan tidak menjadi lingkup pengembangan. Aplikasi **Progressive Web App (PWA)** yang installable dengan offline support, deployed di Vercel dengan Supabase Cloud sebagai backend.
 
 ### Riwayat perubahan
 
@@ -19,7 +20,8 @@
 | 0.1–0.2 | Draft awal: PWA, QRIS/VA via gateway, Supabase |
 | 0.3 | Aspek legal dianggap terpenuhi |
 | 0.4 | **Bukan PWA. Pembayaran lokal/manual tanpa gateway. Model data mengikuti ERD MVP. Konfirmasi pembayaran oleh staf.** |
-| **0.5** | **Platform diberi nama AyoBantu.** |
+| 0.5 | **Platform diberi nama AyoBantu.** |
+| **1.0** | **✅ PWA implementation complete (manifest, service worker, offline caching, install prompt). Finance role merged to Admin. Production deployed.** |
 
 ---
 
@@ -36,20 +38,21 @@ Donasi online tumbuh pesat, tetapi hambatan utamanya adalah kepercayaan: donatur
 3. Memberi Admin dan Finance alat untuk mengelola kampanye, mengonfirmasi pembayaran, mencatat pencairan, dan menangani laporan, dengan jejak audit.
 4. Menjadi proyek pembelajaran yang rapi: arsitektur modular, keamanan data, dan pengujian alur inti.
 
-### 1.3 Non-tujuan (di luar lingkup sekarang)
+### 1.3 Non-tujuan (di luar lingkup)
 
 - Payment gateway, QRIS/VA/e-wallet sungguhan, webhook, dan uang sungguhan.
 - Email, WhatsApp, atau notifikasi pihak ketiga (hanya dicatat di aplikasi).
-- PWA (manifest, service worker, offline, install prompt) dan web push.
 - Penggalang dana mandiri dengan akun terpisah, donasi berulang, wallet/saldo tersimpan.
-- Zakat dan wakaf, microservices, antrean worker, cron, CAPTCHA, analitik.
+- Zakat dan wakaf, microservices, antrean worker, cron, CAPTCHA, analitik eksternal.
+- Web push notifications (PWA push API) — PWA hanya installable + offline cache.
 
 ### 1.4 Asumsi
 
 - Penyelenggara dianggap sudah memiliki seluruh izin dan kewajiban hukum.
 - Tidak ada uang yang berpindah; semua pembayaran adalah catatan lokal.
-- Kampanye dibuat dan dikelola oleh tim internal.
-- Pengguna utama menggunakan ponsel, sehingga desain mobile-first.
+- Kampanye dibuat dan dikelola oleh tim internal (single Admin role).
+- Pengguna utama menggunakan ponsel, sehingga desain mobile-first + PWA installable.
+- Deployment: Vercel (production) + Supabase Cloud (managed database/auth/storage).
 
 ---
 
@@ -57,14 +60,15 @@ Donasi online tumbuh pesat, tetapi hambatan utamanya adalah kepercayaan: donatur
 
 | # | Keputusan | Konsekuensi |
 | --- | --- | --- |
-| D1 | **Lokal dulu** | Jalankan di mesin sendiri. Periksa repo dan stack yang ada sebelum memilih teknologi. Jangan menambah infrastruktur tanpa kebutuhan. |
+| D1 | **Production-ready deployment** | Deployed to Vercel with Supabase Cloud. Database migrations applied to cloud instance. No local Docker required. |
 | D2 | **Tanpa API eksternal** | Tidak ada gateway, email, WhatsApp, atau layanan pihak ketiga. |
 | D3 | **Pembayaran lokal/manual** | Donatur mengisi nominal rupiah. Status `paid` **hanya** dari konfirmasi internal staf terotorisasi. Tidak ada tombol publik yang membuat donasi `paid`. |
-| D4 | **Mode lokal terlihat jelas** | Env `PAYMENT_MODE=local`; UI staf menampilkan penanda **"MODE LOKAL — tidak ada uang sungguhan"**. |
-| D5 | **Bukan PWA** | Web responsif, SSR/ISR untuk halaman publik, Open Graph untuk berbagi. Tanpa manifest/service worker. |
+| D4 | **Mode lokal terlihat jelas** | Env `PAYMENT_MODE=local`; UI staf menampilkan penanda **"MODE LOKAL"** di badge. |
+| D5 | **✅ PWA Complete** | Manifest + Service Worker v2 + offline caching (stale-while-revalidate) + install prompt. Installable ke home screen. Kampanye pages cached for offline access. |
 | D6 | **Modul pembayaran siap diperluas** | Aturan inti donasi terpisah dari provider, sehingga gateway dapat ditambah kelak tanpa mengubah aturan inti. Jangan membangun integrasinya sekarang. |
 | D7 | **Dana dihitung, bukan diketik** | Angka kampanye selalu dari view/query agregasi, tidak ada kolom total yang bisa diedit. |
 | D8 | **Notifikasi dicatat saja** | Tabel `notifications` + tampilan di aplikasi. Tidak ada pengiriman. |
+| D9 | **Single Admin role** | Finance role merged ke Admin. All staff have full permissions (simplified auth). |
 
 ---
 
@@ -72,31 +76,31 @@ Donasi online tumbuh pesat, tetapi hambatan utamanya adalah kepercayaan: donatur
 
 | Aktor | Akun | Deskripsi |
 | --- | --- | --- |
-| **Donatur** | Tidak | Pengunjung yang berdonasi, melacak, dan melaporkan kampanye. |
-| **Admin** | Supabase Auth | Mengelola kampanye, update, laporan, dan staf. |
-| **Finance** | Supabase Auth | Mengonfirmasi pembayaran, refund, pencairan, bukti, dan ekspor. |
-| **Sistem** | n/a | Perhitungan biaya beku, penandaan `expired`, pencatatan notifikasi dan audit. |
+| **Donatur** | Tidak | Pengunjung yang berdonasi, melacak, dan melaporkan kampanye. Dapat install PWA untuk akses cepat. |
+| **Admin** | Supabase Auth | Mengelola kampanye, konfirmasi payment, refund, pencairan, update, laporan, dan staf. (Finance role merged ke Admin) |
+| **Sistem** | n/a | Perhitungan biaya beku, penandaan `expired`, pencatatan notifikasi dan audit. Service Worker untuk caching offline. |
 
-### Matriks izin (default usulan, dapat disesuaikan)
+### Matriks izin (production implementation)
 
-| Aksi | Donatur | Admin | Finance |
-| --- | --- | --- | --- |
-| Lihat kampanye aktif, update, ringkasan dana | ✔ | ✔ | ✔ |
-| Buat donasi, lacak via token | ✔ |  |  |
-| Kirim laporan kampanye | ✔ |  |  |
-| CRUD kampanye, ubah status kampanye |  | ✔ |  |
-| Posting update kampanye |  | ✔ |  |
-| Tangani laporan kampanye |  | ✔ |  |
-| Kelola staf |  | ✔ |  |
-| Lihat daftar donasi (tanpa kontak penuh) |  | ✔ | ✔ |
-| **Konfirmasi/ubah status pembayaran** |  |  | ✔ |
-| **Refund manual** |  |  | ✔ |
-| **Catat pencairan, unggah bukti** |  |  | ✔ |
-| Ekspor CSV (tanpa kontak) |  | ✔ | ✔ |
-| Lihat audit log |  | ✔ | ✔ (baca) |
-| Lihat kontak donatur (dekripsi) |  |  | ✔ (terbatas, tercatat di audit) |
+| Aksi | Donatur | Admin |
+| --- | --- | --- |
+| Lihat kampanye aktif, update, ringkasan dana | ✔ | ✔ |
+| Buat donasi, lacak via token | ✔ |  |
+| Kirim laporan kampanye | ✔ |  |
+| Install PWA, akses offline | ✔ | ✔ |
+| CRUD kampanye, ubah status kampanye |  | ✔ |
+| Posting update kampanye |  | ✔ |
+| Tangani laporan kampanye |  | ✔ |
+| Kelola staf |  | ✔ |
+| Lihat daftar donasi (tanpa kontak penuh) |  | ✔ |
+| **Konfirmasi/ubah status pembayaran** |  | ✔ |
+| **Refund manual** |  | ✔ |
+| **Catat pencairan, unggah bukti** |  | ✔ |
+| Ekspor CSV (tanpa kontak) |  | ✔ |
+| Lihat audit log |  | ✔ |
+| Lihat kontak donatur (dekripsi) |  | ✔ (terbatas, tercatat di audit) |
 
-Prinsip: tindakan yang menyentuh uang dilakukan Finance; tindakan yang membentuk konten dilakukan Admin.
+**Note:** Finance role merged ke Admin di versi 1.0 untuk simplified permission model.
 
 ---
 
