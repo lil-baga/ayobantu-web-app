@@ -4,6 +4,8 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import ReportButton from './_components/ReportButton';
 import DonateButton from './_components/DonateButton';
+import PublicNavbar from '../../_components/PublicNavbar';
+import PublicFooter from '../../_components/PublicFooter';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +16,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const supabase = createAdminClient();
-  
+
   const { data: campaign } = await supabase
     .from('campaigns')
     .select('title, story, cover_image_url')
@@ -73,115 +75,179 @@ export default async function CampaignDetailPage({ params }: Props) {
   const unreported = funds?.unreported || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-4">
-          <Link href="/kampanye" className="text-blue-600 hover:underline">← Kembali</Link>
-          <Link href="/" className="text-2xl font-bold text-blue-600">AyoBantu</Link>
-        </div>
-      </nav>
+    <div className="min-h-screen flex flex-col bg-slate-50/50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+      <PublicNavbar />
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+        <div className="mb-6 flex items-center gap-2 text-xs text-gray-500">
+          <Link href="/kampanye" className="hover:text-blue-600 transition">
+            Kampanye
+          </Link>
+          <span>/</span>
+          <span className="truncate max-w-xs text-gray-900 dark:text-gray-200 font-medium">
+            {campaign.title}
+          </span>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main content */}
           <div className="lg:col-span-2 space-y-6">
-            {campaign.cover_image_url && (
-              <img 
-                src={campaign.cover_image_url}
-                alt={campaign.title}
-                className="w-full rounded-lg shadow-lg"
-              />
-            )}
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 overflow-hidden shadow-sm">
+              <div className="aspect-video w-full bg-gray-100 dark:bg-gray-800 relative">
+                {campaign.cover_image_url ? (
+                  <img
+                    src={campaign.cover_image_url}
+                    alt={campaign.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                    AyoBantu Peduli
+                  </div>
+                )}
+                <div className="absolute top-4 left-4">
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-sm">
+                    Penerima: {campaign.beneficiary_name}
+                  </span>
+                </div>
+              </div>
 
-            <div>
-              <h1 className="text-3xl font-bold mb-2">{campaign.title}</h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Untuk: {campaign.beneficiary_name}
-              </p>
+              <div className="p-6 sm:p-8 space-y-4">
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-snug">
+                  {campaign.title}
+                </h1>
+
+                <div className="prose dark:prose-invert max-w-none pt-4 border-t border-gray-100 dark:border-gray-800">
+                  <h3 className="text-lg font-bold mb-3">Cerita Penggalangan Dana</h3>
+                  <p className="whitespace-pre-wrap text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed">
+                    {campaign.story}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-bold mb-4">Cerita Kampanye</h2>
-              <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
-                {campaign.story}
-              </p>
-            </div>
+            {/* Updates Section */}
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 p-6 sm:p-8 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-lg font-bold">Kabar Terbaru</h3>
+                  <p className="text-xs text-gray-500">Transparansi perkembangan dan penyaluran donasi</p>
+                </div>
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
+                  {updates?.length || 0} Update
+                </span>
+              </div>
 
-            {/* Updates */}
-            {updates && updates.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold mb-4">Update Kampanye</h2>
-                <div className="space-y-4">
+              {updates && updates.length > 0 ? (
+                <div className="space-y-6">
                   {updates.map((update) => (
-                    <div key={update.id} className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0">
-                      <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                        {new Date(update.posted_at).toLocaleDateString('id-ID', { 
-                          day: 'numeric', month: 'long', year: 'numeric' 
+                    <div
+                      key={update.id}
+                      className="border-l-2 border-blue-500 pl-4 py-1 space-y-2 relative"
+                    >
+                      <div className="text-xs text-gray-400">
+                        {new Date(update.posted_at).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
                         })}
                       </div>
-                      <h3 className="font-bold mb-2">{update.title}</h3>
-                      <p className="text-gray-700 dark:text-gray-300 text-sm">{update.body}</p>
+                      <h4 className="font-bold text-sm sm:text-base">{update.title}</h4>
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed">
+                        {update.body}
+                      </p>
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="text-center py-8 text-gray-400 text-xs sm:text-sm">
+                  Belum ada kabar terbaru dari penggalang dana.
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Sidebar */}
+          {/* Sidebar Action & Transparansi */}
           <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 sticky top-4">
-              <div className="mb-4">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Terkumpul</div>
-                <div className="text-2xl font-bold text-blue-600">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 p-6 shadow-sm sticky top-20 space-y-6">
+              {/* Progress Bar */}
+              <div>
+                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1 font-semibold">
+                  Dana Terkumpul
+                </div>
+                <div className="text-3xl font-black text-blue-600 dark:text-blue-400">
                   Rp{collected.toLocaleString('id-ID')}
                 </div>
-              </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  dari target <span className="font-semibold text-gray-700 dark:text-gray-300">Rp{target.toLocaleString('id-ID')}</span>
+                </div>
 
-              <div className="mb-4">
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                  <div 
-                    className="bg-blue-600 h-3 rounded-full transition-all"
+                <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2.5 mt-4 overflow-hidden">
+                  <div
+                    className="bg-blue-600 h-full rounded-full transition-all duration-500"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  {percentage}% dari target Rp{target.toLocaleString('id-ID')}
+                <div className="flex justify-between items-center text-xs mt-2 font-medium">
+                  <span className="text-blue-600 font-bold">{percentage}% Tercapai</span>
+                  <span className="text-gray-400">Terbuka</span>
                 </div>
               </div>
 
+              {/* Donation Trigger */}
               <DonateButton campaignId={campaign.id} campaignTitle={campaign.title} />
 
-              {/* Transparency */}
-              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Terkumpul</span>
-                  <span className="font-medium">Rp{collected.toLocaleString('id-ID')}</span>
+              {/* Transparency Breakdown */}
+              <div className="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-3">
+                <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-gray-400">
+                  <span>Laporan Transparansi</span>
+                  <span className="text-emerald-500">Live</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Biaya Operasional</span>
-                  <span className="font-medium">Rp{operational.toLocaleString('id-ID')}</span>
+
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                    <span>Total Donasi Masuk</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      Rp{collected.toLocaleString('id-ID')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                    <span>Biaya Operasional (5%)</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      Rp{operational.toLocaleString('id-ID')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                    <span>Sudah Dicairkan</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      Rp{disbursed.toLocaleString('id-ID')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-gray-100 dark:border-gray-800 text-sm font-bold">
+                    <span>Sisa Dana Siap Salur</span>
+                    <span className="text-emerald-600 dark:text-emerald-400">
+                      Rp{remaining.toLocaleString('id-ID')}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Dicairkan</span>
-                  <span className="font-medium">Rp{disbursed.toLocaleString('id-ID')}</span>
-                </div>
-                <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
-                  <span className="font-medium">Sisa Dana</span>
-                  <span className="font-bold text-green-600">Rp{remaining.toLocaleString('id-ID')}</span>
-                </div>
+
                 {unreported > 0 && (
-                  <div className="text-xs text-yellow-600 dark:text-yellow-500">
-                    ⚠ Rp{unreported.toLocaleString('id-ID')} belum dilaporkan
+                  <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-[11px] text-amber-800 dark:text-amber-300">
+                    ⚠️ Ada <span className="font-bold">Rp{unreported.toLocaleString('id-ID')}</span> dana yang baru dicairkan dan sedang menunggu unggah nota laporan.
                   </div>
                 )}
               </div>
 
-              <ReportButton campaignId={campaign.id} />
+              {/* Report Action */}
+              <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+                <ReportButton campaignId={campaign.id} />
+              </div>
             </div>
           </div>
         </div>
       </main>
+
+      <PublicFooter />
     </div>
   );
 }
