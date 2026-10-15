@@ -1,34 +1,3 @@
 {
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm ci",
-  "framework": "nextjs",
-  "nodeVersion": "22.x",
-  "env": [
-    {
-      "key": "SUPABASE_URL",
-      "description": "Supabase project URL"
-    },
-    {
-      "key": "SUPABASE_ANON_KEY",
-      "description": "Supabase anonymous key (public)"
-    },
-    {
-      "key": "SUPABASE_SERVICE_ROLE_KEY",
-      "description": "Supabase service role key (server only, NEVER in NEXT_PUBLIC)"
-    },
-    {
-      "key": "ENCRYPTION_KEY",
-      "description": "Base64-encoded 32-byte encryption key for donor contacts"
-    },
-    {
-      "key": "NEXT_PUBLIC_APP_URL",
-      "description": "App URL for public use (e.g., https://ayobantu.vercel.app)"
-    },
-    {
-      "key": "PAYMENT_MODE",
-      "description": "Set to 'local' for local payment mode (no real gateway)"
-    }
-  ],
-  "outputDirectory": ".next"
+  "framework": "nextjs"
 }
